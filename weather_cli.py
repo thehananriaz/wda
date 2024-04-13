@@ -55,6 +55,45 @@ def export_results(self, file_path, file_format='txt'):
 
 
 
+#analyz cli command
+def analyze(self, start_date, end_date):
+        if not self.data:
+            print("No data found")
+            return
+
+        try:
+            start_date = datetime.strptime(start_date, '%Y-%m-%d')
+            end_date = datetime.strptime(end_date, '%Y-%m-%d')
+        except ValueError:
+            print("Invalid date format. Please use year-month-day.")
+            return
+
+        filtered_data = [entry for entry in self.data if start_date <= datetime.strptime(entry['date'], '%Y-%m-%d') <= end_date]
+
+        if not filtered_data:
+            print("No data available for the specified time range.")
+            return
+
+        temperatures = [float(entry['temperature']) for entry in filtered_data]
+        humidity = [float(entry['humidity']) for entry in filtered_data]
+        wind_speed = [float(entry['wind_speed']) for entry in filtered_data]
+
+        avg_temp = sum(temperatures) / len(temperatures)
+        min_temp = min(temperatures)
+        max_temp = max(temperatures)
+
+        avg_humidity = sum(humidity) / len(humidity)
+        trend_humidity = "increasing" if humidity[-1] > humidity[0] else "decreasing"
+
+        windiest_day = max(filtered_data, key=lambda x: float(x['wind_speed']))
+
+        print("Analysis results:")
+        print(f"Average temperature: {avg_temp:.2f}°C")
+        print(f"Minimum temperature: {min_temp:.2f}°C")
+        print(f"Maximum temperature: {max_temp:.2f}°C")
+        print(f"Average humidity: {avg_humidity:.2f}%")
+        print(f"Humidity trend: {trend_humidity}")
+        print(f"Windiest day: {windiest_day['date']} with {windiest_day['wind_speed']} km/h wind speed")
 
 
 # cmd = sys.argv[1]
